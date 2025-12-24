@@ -1,0 +1,624 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Colors */
+    --primary: #2196F3;
+    --primary-dark: #1976D2;
+    --primary-light: #64B5F6;
+    --secondary: #FF9800;
+    --success: #4CAF50;
+    --warning: #FFC107;
+    --danger: #F44336;
+    --info: #00BCD4;
+    
+    /* Backgrounds */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-tertiary: #eeeeee;
+    --bg-dark: #1a1a1a;
+    
+    /* Text */
+    --text-primary: #212121;
+    --text-secondary: #666666;
+    --text-light: #999999;
+    
+    /* Borders */
+    --border-color: #e0e0e0;
+    --border-radius: 12px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+html, body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* ============== HEADER ============== */
+.header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.header-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #FFC107;
+    animation: pulse 2s infinite;
+}
+
+.status-dot.connected {
+    background-color: #4CAF50;
+}
+
+.status-dot.disconnected {
+    background-color: #F44336;
+    animation: none;
+}
+
+.ip-config-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    margin-left: 0.5rem;
+}
+
+.ip-config-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* ============== TABS ============== */
+.tabs {
+    display: flex;
+    gap: 0;
+    background: white;
+    border-bottom: 2px solid var(--border-color);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    color: var(--primary);
+    background-color: var(--bg-secondary);
+}
+
+.tab-button.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* ============== CONTAINER & LAYOUT ============== */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.main-content {
+    padding: 2rem;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============== SECTIONS ============== */
+.section {
+    margin-bottom: 2rem;
+}
+
+.section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+/* ============== CARDS ============== */
+.sensor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.sensor-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.sensor-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+}
+
+.sensor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sensor-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.sensor-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    animation: none;
+    transition: background-color 0.3s ease;
+}
+
+.sensor-indicator.good {
+    background-color: var(--success);
+    animation: pulse 2s infinite;
+}
+
+.sensor-indicator.moderate {
+    background-color: var(--warning);
+    animation: pulse 2s infinite;
+}
+
+.sensor-indicator.poor {
+    background-color: var(--danger);
+    animation: pulse 1s infinite;
+}
+
+.sensor-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sensor-value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+}
+
+.unit {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.sensor-value-large {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    justify-content: center;
+    padding: 1.5rem 0;
+}
+
+.value-lg {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+}
+
+.unit-lg {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.sensor-status {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* ============== PROGRESS BARS ============== */
+.sensor-bar {
+    height: 8px;
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* ============== AIR QUALITY SECTION ============== */
+.air-quality-section {
+    margin-bottom: 2rem;
+}
+
+.air-quality-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.air-quality-card h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.iaq-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+.iaq-gauge {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.gauge-svg {
+    width: 100%;
+    height: auto;
+}
+
+.iaq-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.05), rgba(33, 150, 243, 0.02));
+    border-radius: var(--border-radius);
+}
+
+.big-number {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+}
+
+.iaq-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.iaq-status {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    min-width: 120px;
+}
+
+.iaq-status.moderate {
+    background-color: #FFC107;
+    color: white;
+}
+
+.iaq-status.poor {
+    background-color: #F44336;
+    color: white;
+}
+
+/* ============== HEALTH SECTION ============== */
+.health-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.health-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+}
+
+.health-label {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.health-bar {
+    height: 24px;
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--info));
+    transition: width 0.5s ease;
+}
+
+.health-value {
+    text-align: right;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* ============== FOOTER SECTION ============== */
+.footer-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+.last-update {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.last-update p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.last-update span {
+    font-weight: 600;
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+}
+
+/* ============== PLACEHOLDER CARD ============== */
+.placeholder-card {
+    background: white;
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+.placeholder-card h2 {
+    margin-bottom: 1rem;
+}
+
+.placeholder-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+/* ============== RESPONSIVE ============== */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-content h1 {
+        font-size: 2rem;
+    }
+
+    .tabs {
+        padding: 0 1rem;
+    }
+
+    .tab-button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
+
+    .section h2 {
+        font-size: 1.2rem;
+    }
+
+    .iaq-display {
+        grid-template-columns: 1fr;
+    }
+
+    .iaq-gauge {
+        max-width: 250px;
+    }
+
+    .big-number {
+        font-size: 3rem;
+    }
+
+    .sensor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .status-indicator {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.85rem;
+    }
+
+    .tabs {
+        overflow-x: auto;
+        gap: 0.5rem;
+    }
+
+    .tab-button {
+        padding: 0.75rem 0.75rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .sensor-card {
+        padding: 1rem;
+    }
+
+    .sensor-header h3 {
+        font-size: 1rem;
+    }
+
+    .value {
+        font-size: 1.5rem;
+    }
+
+    .value-lg {
+        font-size: 2rem;
+    }
+
+    .big-number {
+        font-size: 2.5rem;
+    }
+
+    .air-quality-card {
+        padding: 1rem;
+    }
+
+    .iaq-value {
+        padding: 1rem;
+    }
+}
+
+/* ============== AQI LEVEL STYLES ============== */
+.aqi-level {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+    min-width: 200px;
+    margin-top: 0.5rem;
+}
+
+.aqi-good {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.aqi-moderate {
+    background-color: #FFC107;
+    color: #212121;
+}
+
+.aqi-sensitive {
+    background-color: #FF9800;
+    color: white;
+}
+
+.aqi-unhealthy {
+    background-color: #F44336;
+    color: white;
+}
+
+.aqi-very-unhealthy {
+    background-color: #9C27B0;
+    color: white;
+}
+
+.aqi-hazardous {
+    background-color: #5D1A1A;
+    color: white;
+}
+

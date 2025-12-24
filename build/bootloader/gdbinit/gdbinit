@@ -1,0 +1,2 @@
+source /home/arjunc/aer.pm2.5/bme680_test/build/bootloader/gdbinit/symbols
+source /home/arjunc/aer.pm2.5/bme680_test/build/bootloader/gdbinit/connect

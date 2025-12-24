@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Purifier Monitor - Intake</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>Air Purifier Monitor</h1>
+                <p class="subtitle">Real-time Air Quality Analysis</p>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot" id="connectionStatus"></span>
+                <span id="connectionText">Connecting...</span>
+                <button class="ip-config-btn" id="ipConfigBtn" title="Configure ESP32 IP">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="intake">Intake Air</button>
+            <button class="tab-button" data-tab="exhaust">Exhaust Air</button>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="intake" class="tab-content active">
+                <!-- Air Quality Score -->
+                <section class="section air-quality-section">
+                    <div class="air-quality-card">
+                        <h2>Overall Air Quality</h2>
+                        <div class="iaq-display">
+                            <div class="iaq-gauge">
+                                <svg viewBox="0 0 200 120" class="gauge-svg">
+                                    <path d="M 20 100 A 80 80 0 0 1 180 100" stroke="#e0e0e0" stroke-width="8" fill="none"/>
+                                    <path d="M 20 100 A 80 80 0 0 1 80 25" stroke="#4CAF50" stroke-width="8" fill="none"/>
+                                    <path d="M 80 25 A 80 80 0 0 1 140 35" stroke="#FFC107" stroke-width="8" fill="none"/>
+                                    <path d="M 140 35 A 80 80 0 0 1 180 100" stroke="#F44336" stroke-width="8" fill="none"/>
+                                    <g id="intakeIaqNeedle" transform="translate(100, 100)">
+                                        <line x1="0" y1="0" x2="0" y2="-70" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+                                        <circle cx="0" cy="0" r="5" fill="#333"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="iaq-value">
+                                <div class="big-number" id="intakeIaqScore">--</div>
+                                <div class="iaq-label">IAQ Score</div>
+                                <div class="iaq-status" id="intakeIaqStatus">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Gas Sensors -->
+                <section class="section gas-sensors-section">
+                    <h2>Chemical Sensors</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>H₂S (Hydrogen Sulfide)</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value"><span class="value" id="intakeH2sRaw">--</span><span class="unit">Raw ADC</span></div>
+                                <div class="sensor-value"><span class="value" id="intakeH2sVolt">--</span><span class="unit">V</span></div>
+                                <div class="sensor-bar"><div class="bar-fill" id="intakeH2sBar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Odor Sensor</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value"><span class="value" id="intakeOdorRaw">--</span><span class="unit">Raw ADC</span></div>
+                                <div class="sensor-value"><span class="value" id="intakeOdorVolt">--</span><span class="unit">V</span></div>
+                                <div class="sensor-bar"><div class="bar-fill" id="intakeOdorBar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Particulate Matter Data -->
+                <section class="section pm-section">
+                    <h2>Particulate Matter (PM)</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>PM1.0</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakePm1">--</span><span class="unit-lg">µg/m³</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>PM2.5</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakePm25">--</span><span class="unit-lg">µg/m³</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>PM10</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakePm10">--</span><span class="unit-lg">µg/m³</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AQI Data -->
+                <section class="section aqi-section">
+                    <h2>Air Quality Index (AQI)</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>AQI Score</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakeAqiScore">--</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>AQI Level</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg aqi-level" id="intakeAqiLevel">--</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Environmental Data -->
+                <section class="section environmental-section">
+                    <h2>Environmental Conditions</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Temperature</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakeTemp">--</span><span class="unit-lg">°C</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Humidity</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakeHum">--</span><span class="unit-lg">%</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Pressure</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakePres">--</span><span class="unit-lg">hPa</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Air Quality Indices -->
+                <section class="section indices-section">
+                    <h2>Air Quality Indices</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>eCO₂ Equivalent</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakeEco2">--</span><span class="unit-lg">ppm</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Breath VOC</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakeBvoc">--</span><span class="unit-lg">ppm</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Gas Resistance</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="intakeGas">--</span><span class="unit-lg">Ω</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sensor Health -->
+                <section class="section health-section">
+                    <h2>Sensor Status</h2>
+                    <div class="health-container">
+                        <div class="health-item">
+                            <div class="health-label">Stabilization</div>
+                            <div class="health-bar"><div class="health-fill" id="intakeStab" style="width: 0%"></div></div>
+                            <div class="health-value" id="intakeStabVal">--%</div>
+                        </div>
+                        <div class="health-item">
+                            <div class="health-label">Run-in Status</div>
+                            <div class="health-bar"><div class="health-fill" id="intakeRunIn" style="width: 0%"></div></div>
+                            <div class="health-value" id="intakeRunInVal">--%</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Last Updated -->
+                <section class="section footer-section">
+                    <div class="last-update">
+                        <p>Last Updated: <span id="lastUpdate">--:--:--</span></p>
+                        <p>Data Update Interval: <span id="updateInterval">3</span> seconds</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Exhaust Tab -->
+            <div id="exhaust" class="tab-content">
+                <!-- Air Quality Score -->
+                <section class="section air-quality-section">
+                    <div class="air-quality-card">
+                        <h2>Overall Air Quality - Exhaust</h2>
+                        <div class="iaq-display">
+                            <div class="iaq-gauge">
+                                <svg viewBox="0 0 200 120" class="gauge-svg">
+                                    <path d="M 20 100 A 80 80 0 0 1 180 100" stroke="#e0e0e0" stroke-width="8" fill="none"/>
+                                    <path d="M 20 100 A 80 80 0 0 1 80 25" stroke="#4CAF50" stroke-width="8" fill="none"/>
+                                    <path d="M 80 25 A 80 80 0 0 1 140 35" stroke="#FFC107" stroke-width="8" fill="none"/>
+                                    <path d="M 140 35 A 80 80 0 0 1 180 100" stroke="#F44336" stroke-width="8" fill="none"/>
+                                    <g id="exhaustIaqNeedle" transform="translate(100, 100)">
+                                        <line x1="0" y1="0" x2="0" y2="-70" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+                                        <circle cx="0" cy="0" r="5" fill="#333"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="iaq-value">
+                                <div class="big-number" id="exhaustIaqScore">--</div>
+                                <div class="iaq-label">IAQ Score</div>
+                                <div class="iaq-status" id="exhaustIaqStatus">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Gas Sensors -->
+                <section class="section gas-sensors-section">
+                    <h2>Chemical Sensors</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>H₂S (Hydrogen Sulfide)</h3><div class="sensor-indicator" id="exhaustH2sInd"></div></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value"><span class="value" id="exhaustH2sRaw">--</span><span class="unit">Raw ADC</span></div>
+                                <div class="sensor-value"><span class="value" id="exhaustH2sVolt">--</span><span class="unit">V</span></div>
+                                <div class="sensor-bar"><div class="bar-fill" id="exhaustH2sBar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Odor Sensor</h3><div class="sensor-indicator" id="exhaustOdorInd"></div></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value"><span class="value" id="exhaustOdorRaw">--</span><span class="unit">Raw ADC</span></div>
+                                <div class="sensor-value"><span class="value" id="exhaustOdorVolt">--</span><span class="unit">V</span></div>
+                                <div class="sensor-bar"><div class="bar-fill" id="exhaustOdorBar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Particulate Matter Data -->
+                <section class="section pm-section">
+                    <h2>Particulate Matter (PM)</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>PM1.0</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustPm1">--</span><span class="unit-lg">µg/m³</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>PM2.5</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustPm25">--</span><span class="unit-lg">µg/m³</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>PM10</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustPm10">--</span><span class="unit-lg">µg/m³</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AQI Data -->
+                <section class="section aqi-section">
+                    <h2>Air Quality Index (AQI)</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>AQI Score</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustAqiScore">--</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>AQI Level</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg aqi-level" id="exhaustAqiLevel">--</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Environmental Data -->
+                <section class="section environmental-section">
+                    <h2>Environmental Conditions</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Temperature</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustTemp">--</span><span class="unit-lg">°C</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Humidity</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustHum">--</span><span class="unit-lg">%</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Pressure</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustPres">--</span><span class="unit-lg">hPa</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Air Quality Indices -->
+                <section class="section indices-section">
+                    <h2>Air Quality Indices</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>eCO₂ Equivalent</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustEco2">--</span><span class="unit-lg">ppm</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Breath VOC</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustBvoc">--</span><span class="unit-lg">ppm</span></div>
+                            </div>
+                        </div>
+                        <div class="sensor-card">
+                            <div class="sensor-header"><h3>Gas Resistance</h3></div>
+                            <div class="sensor-body">
+                                <div class="sensor-value-large"><span class="value-lg" id="exhaustGas">--</span><span class="unit-lg">Ω</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sensor Health -->
+                <section class="section health-section">
+                    <h2>Sensor Status</h2>
+                    <div class="health-container">
+                        <div class="health-item">
+                            <div class="health-label">Stabilization</div>
+                            <div class="health-bar"><div class="health-fill" id="exhaustStab" style="width: 0%"></div></div>
+                            <div class="health-value" id="exhaustStabVal">--%</div>
+                        </div>
+                        <div class="health-item">
+                            <div class="health-label">Run-in Status</div>
+                            <div class="health-bar"><div class="health-fill" id="exhaustRunIn" style="width: 0%"></div></div>
+                            <div class="health-value" id="exhaustRunInVal">--%</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Last Updated -->
+                <section class="section footer-section">
+                    <div class="last-update">
+                        <p>Last Updated: <span id="lastUpdateExhaust">--:--:--</span></p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

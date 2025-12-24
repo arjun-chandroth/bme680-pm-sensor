@@ -1,0 +1,277 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                   AIR PURIFIER MONITOR - COMPLETE SETUP                    ║
+║                                                                            ║
+║                    Intake & Exhaust Air Quality Monitoring                ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 WHAT'S READY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ ESP32 Firmware (main/bme680_test.c)
+   • All sensors integrated and reading data
+   • WiFi connectivity included
+   • HTTP server running on port 80
+   • Data served as JSON at /api/sensors
+   • Updates every 3 seconds
+
+✅ Web UI (web-ui/)
+   • Professional dashboard with intake & exhaust tabs
+   • Real-time gauge displays
+   • Responsive design (works on all devices)
+   • Automatically connects to ESP32
+   • Falls back to simulated data if offline
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 STEP-BY-STEP SETUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1️⃣  - CONFIGURE WIFI CREDENTIALS
+═══════════════════════════════════════
+
+Edit: /home/arjunc/aer.pm2.5/bme680_test/main/bme680_test.c
+
+Find these lines (around line 155):
+
+    #define WIFI_SSID      "YOUR_SSID"        // ← Change this
+    #define WIFI_PASSWORD  "YOUR_PASSWORD"    // ← Change this
+
+Replace with YOUR actual WiFi credentials:
+
+    #define WIFI_SSID      "MyHomeWiFi"
+    #define WIFI_PASSWORD  "MyPassword123"
+
+
+STEP 2️⃣  - BUILD & FLASH ESP32
+═════════════════════════════════
+
+Open terminal and run:
+
+    cd /home/arjunc/aer.pm2.5/bme680_test
+    idf.py build
+    idf.py -p /dev/ttyUSB0 flash monitor
+
+⏳ Wait for build to complete (2-3 minutes)
+
+📡 Watch the serial output for:
+   "I (1234) BME680: WiFi connected! IP: 192.168.x.x"
+   ↑ COPY THIS IP ADDRESS - YOU'LL NEED IT!
+
+
+STEP 3️⃣  - OPEN WEB UI
+══════════════════════
+
+Option A - Direct Open (EASIEST):
+   1. Open file manager
+   2. Go to: /home/arjunc/aer.pm2.5/bme680_test/web-ui/
+   3. Double-click index.html
+   4. Page opens in browser
+
+Option B - Via Web Server:
+   cd /home/arjunc/aer.pm2.5/bme680_test/web-ui
+   python3 -m http.server 8000
+   Then open: http://localhost:8000/index.html
+
+
+STEP 4️⃣  - CONNECT TO ESP32
+═════════════════════════════
+
+Once UI loads:
+
+   1. Click the ⚙️ GEAR ICON (top right corner)
+   2. Enter your ESP32's IP address
+      Example: 192.168.1.100 (from Step 2)
+   3. Click OK
+   4. Wait 2-3 seconds
+
+✅ Status changes from "Using Simulated Data" → "Connected to ESP32"
+✅ Live sensor readings appear
+✅ Both Intake and Exhaust tabs show real data
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 WHAT YOU'LL SEE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+INTAKE TAB (Real Data from ESP32):
+├─ Air Quality Score Gauge (0-500)
+├─ H₂S Sensor
+│  ├─ Raw ADC Value (0-4095)
+│  └─ Voltage (0-3.3V)
+├─ Odor Sensor
+│  ├─ Raw ADC Value (0-4095)
+│  └─ Voltage (0-3.3V)
+├─ Temperature (°C from BME680)
+├─ Humidity (% from BME680)
+├─ Pressure (hPa from BME680)
+├─ eCO₂ Equivalent (ppm)
+├─ Breath VOC (ppm)
+├─ Gas Resistance (Ohms)
+└─ Sensor Status
+   ├─ Stabilization %
+   └─ Run-in Status %
+
+EXHAUST TAB (Currently Simulated):
+└─ Same layout as INTAKE
+   (Ready for real exhaust sensor data later)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ Status shows "Using Simulated Data" (not connecting)
+
+   ✓ Click ⚙️ and verify IP address is correct
+   ✓ Check ESP32 is powered on
+   ✓ Verify both on same WiFi network
+   ✓ Refresh browser (Ctrl+F5)
+   ✓ Check firewall allows port 80
+
+❌ Can't find ESP32 IP address
+
+   ✓ Watch serial monitor during startup:
+     idf.py -p /dev/ttyUSB0 monitor
+   ✓ Look for: "WiFi connected! IP: xxx.xxx.xxx.xxx"
+   ✓ Or check WiFi router's connected devices list
+
+❌ WiFi connection fails
+
+   ✓ Verify WIFI_SSID spelling (case-sensitive)
+   ✓ Verify WIFI_PASSWORD spelling (case-sensitive)
+   ✓ Ensure WiFi is 2.4GHz (not 5GHz only)
+   ✓ Rebuild and reflash: idf.py build && idf.py flash
+
+❌ Sensors show all zeros
+
+   ✓ Check all sensor wires properly connected
+   ✓ Verify I2C on pins 21 (SDA) & 22 (SCL)
+   ✓ Verify ADC on pins 34 (H2S) & 35 (Odor)
+   ✓ Confirm 3.3V power to all sensors
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📱 HOW TO ACCESS FROM OTHER DEVICES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+From your PHONE/TABLET/LAPTOP on same WiFi:
+
+   1. Open browser
+   2. Enter: http://[your-computer-ip]:8000/web-ui/
+      
+      Example: http://192.168.1.50:8000/web-ui/
+   
+   3. UI loads on your device
+   4. Configure ESP32 IP with ⚙️ button
+   5. Done!
+
+To find your computer's IP:
+   Linux:   hostname -I
+   Windows: ipconfig
+   Mac:     ifconfig
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌐 DATA FLOW DIAGRAM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Your Computer/Phone
+        │
+        │ 1. Opens index.html
+        │
+        ▼
+    Web Browser
+        │
+        │ 2. Clicks ⚙️ & enters ESP32 IP
+        │ 3. app.js makes HTTP GET request
+        │
+        ├──────────────────────────────────────────┐
+        │ HTTP GET http://192.168.1.100/api/sensors│
+        │                                           │
+        ▼                                           ▼
+    ESP32 NodeMCU                        Every 3 seconds
+        │
+        ├─ WiFi Connected ✓
+        │
+        ├─ HTTP Server Running (port 80)
+        │
+        ├─ Sensors Reading:
+        │  ├─ BME680 (I2C: pins 21, 22)
+        │  ├─ H2S Sensor (ADC: pin 34)
+        │  └─ Odor Sensor (ADC: pin 35)
+        │
+        └─ Responds with JSON:
+           {"iaq": 50, "temperature": 24.5, ...}
+                ▲
+                │
+                └─ Browser receives & displays
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📁 KEY FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ESP32 Firmware:
+   📄 main/bme680_test.c          - Main application code with HTTP server
+   📄 main/CMakeLists.txt         - Dependencies (esp_http_server, esp_wifi, etc.)
+
+Web UI:
+   📄 web-ui/index.html           - HTML structure with both tabs
+   📄 web-ui/styles.css           - Beautiful styling & responsive design
+   📄 web-ui/app.js               - JavaScript logic & ESP32 communication
+
+Documentation:
+   📄 web-ui/README.md            - Detailed UI documentation
+   📄 QUICKSTART.md               - Quick reference guide
+   📄 SETUP.txt                   - This file!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ FEATURES AT A GLANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Real-time Monitoring
+   • Data updates every 3 seconds
+   • Live gauge displays
+   • Responsive to sensor changes
+
+✅ Dual Monitoring
+   • Intake & Exhaust tabs
+   • Compare air quality before/after purifier
+   • Visual progress bars for each metric
+
+✅ Professional UI
+   • Modern gradient design
+   • Smooth animations
+   • Works on desktop, tablet, phone
+   • Dark status indicators
+
+✅ Smart Connection
+   • Auto-detects ESP32
+   • Saves IP address in browser
+   • Falls back to simulated data if offline
+   • Connection status indicator
+
+✅ Complete Sensor Suite
+   • BME680: Temperature, Humidity, Pressure, Gas
+   • H2S: Hydrogen Sulfide detection
+   • Odor: Chemical odor sensing
+   • IAQ: Indoor Air Quality score
+   • eCO2: CO2 equivalent
+   • bVOC: Breath VOC equivalent
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 READY TO GO!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Your air purifier monitoring system is complete and ready to use.
+
+Next Steps:
+   1️⃣  Edit WiFi credentials in main/bme680_test.c
+   2️⃣  Build & flash: idf.py build && idf.py flash
+   3️⃣  Copy ESP32 IP from serial monitor
+   4️⃣  Open index.html in web browser
+   5️⃣  Click ⚙️ and enter ESP32 IP
+   6️⃣  Watch real-time sensor data!
+
+For more details, see:
+   • QUICKSTART.md - Quick reference
+   • web-ui/README.md - Detailed documentation
+
+═══════════════════════════════════════════════════════════════════════════════
+                    Good luck with your air purifier project! 🌬️
+═══════════════════════════════════════════════════════════════════════════════
